@@ -1,6 +1,10 @@
 // ======================
 // AUTH GUARD
 // ======================
+const HOST_API = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+  ? "http://127.0.0.1:3001"
+  : "";
+
 if (!localStorage.getItem("authToken")) {
   window.location.href = "auth.html";
 }
@@ -8,7 +12,7 @@ if (!localStorage.getItem("authToken")) {
 // Enforce backend token verification to prevent localStorage-only bypass.
 const authToken = localStorage.getItem("authToken");
 if (authToken) {
-  fetch("/verify", {
+  fetch(`${HOST_API}/verify`, {
     headers: { Authorization: `Bearer ${authToken}` },
   })
     .then((res) => {
@@ -27,8 +31,6 @@ let provider;
 let signer;
 let userAddress;
 let cachedTrendingTokens = [];
-
-const HOST_API = ""; // use Vite proxy or same-origin backend
 
 const CHAIN_CONFIG = {
   ethereum: {

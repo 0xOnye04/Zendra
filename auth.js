@@ -18,6 +18,10 @@ function setActiveButton() {
   document.getElementById('btnLogin').classList.toggle('active', document.getElementById('loginBox').classList.contains('hidden') === false);
 }
 
+const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+  ? "http://127.0.0.1:3001"
+  : "";
+
 // ======================
 // SIGNUP
 // ======================
@@ -30,7 +34,7 @@ async function signup() {
   }
 
   try {
-    const res = await fetch("/signup", {
+    const res = await fetch(`${API_BASE}/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -61,7 +65,7 @@ async function login() {
   }
 
   try {
-    const res = await fetch("/login", {
+    const res = await fetch(`${API_BASE}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -104,7 +108,7 @@ async function verifyExistingSession() {
   if (!token) return;
 
   try {
-    const res = await fetch("/verify", {
+    const res = await fetch(`${API_BASE}/verify`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {
