@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>zendra-terminal</title>
     <script>
-      if (localStorage.getItem("loggedIn") !== "true") {
+      if (!localStorage.getItem("authToken")) {
         window.location.href = 'auth.html#signup';
       }
     </script>

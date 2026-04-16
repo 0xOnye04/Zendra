@@ -6,12 +6,18 @@ import fs from "fs/promises";
 import path from "path";
 import https from "https";
 import crypto from "crypto";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
 const app = express();
 app.disable("x-powered-by");
 app.set("trust proxy", true);
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const DIST_DIR = path.resolve(__dirname, "../dist");
+const DIST_INDEX = path.join(DIST_DIR, "index.html");
 
 const ALLOWED_ORIGINS = [
   process.env.FRONTEND_ORIGIN,
@@ -34,6 +40,12 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "10kb" }));
+
+// Serve built frontend in production (Vite build output).
+// This makes GET / return the app instead of 404 on hosts like Render/Railway/Fly.
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(DIST_DIR, { index: false }));
+}
 
 const OX_API_KEY = process.env.OX_API_KEY;
 const AVE_API_KEY = process.env.AVE_API_KEY || process.env.OX_API_KEY;
@@ -262,6 +274,21 @@ app.get("/swap", async (req, res) => {
     res.status(500).json({ error: "Swap failed" });
   }
 });
+
+// SPA fallback (must be after API routes)
+// Express v5 + path-to-regexp is strict about wildcard route patterns, so use
+// a final middleware instead of `app.get("*")`.
+if (process.env.NODE_ENV === "production") {
+  app.use(async (req, res, next) => {
+    if (req.method !== "GET") return next();
+    try {
+      const html = await fs.readFile(DIST_INDEX, "utf-8");
+      res.type("html").send(html);
+    } catch {
+      res.status(404).send("Frontend build not found. Run `npm run build` to generate dist/.");
+    }
+  });
+}
 
 // ======================
 const PORT = process.env.PORT || 3001;

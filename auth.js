@@ -72,10 +72,10 @@ async function login() {
       return showMsg(data.error || "Login failed");
     }
 
-    localStorage.setItem("loggedIn", "true");
-    if (data.token) {
-      localStorage.setItem("authToken", data.token);
+    if (!data.token) {
+      return showMsg("Login failed: token missing from server response.");
     }
+    localStorage.setItem("authToken", data.token);
     window.location.href = "index.html";
   } catch (err) {
     console.error(err);
@@ -89,10 +89,7 @@ function showMsg(msg) {
 }
 
 function initAuth() {
-  if (localStorage.getItem("loggedIn") === "true") {
-    window.location.href = "index.html";
-    return;
-  }
+  verifyExistingSession();
 
   const hash = window.location.hash.toLowerCase();
   if (hash === '#login') {
@@ -100,6 +97,25 @@ function initAuth() {
   } else {
     showSignup();
   }
+}
+
+async function verifyExistingSession() {
+  const token = localStorage.getItem("authToken");
+  if (!token) return;
+
+  try {
+    const res = await fetch("/verify", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      window.location.href = "index.html";
+      return;
+    }
+  } catch (err) {
+    console.warn("Session verification failed:", err);
+  }
+
+  localStorage.removeItem("authToken");
 }
 
 if (document.readyState === 'loading') {

@@ -1,8 +1,23 @@
 // ======================
 // AUTH GUARD
 // ======================
-if (localStorage.getItem("loggedIn") !== "true") {
+if (!localStorage.getItem("authToken")) {
   window.location.href = "auth.html";
+}
+
+// Enforce backend token verification to prevent localStorage-only bypass.
+const authToken = localStorage.getItem("authToken");
+if (authToken) {
+  fetch("/verify", {
+    headers: { Authorization: `Bearer ${authToken}` },
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Invalid session");
+    })
+    .catch(() => {
+      localStorage.removeItem("authToken");
+      window.location.href = "auth.html#login";
+    });
 }
 
 import './style.css';
@@ -594,6 +609,6 @@ setInterval(() => {
 }, 5000);
 
 window.logout = function () {
-  localStorage.removeItem("loggedIn");
+  localStorage.removeItem("authToken");
   window.location.href = "auth.html";
 };
