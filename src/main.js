@@ -1,28 +1,6 @@
-// ======================
-// AUTH GUARD
-// ======================
 const HOST_API = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
   ? "http://127.0.0.1:3001"
   : "";
-
-if (!localStorage.getItem("authToken")) {
-  window.location.href = "auth.html";
-}
-
-// Enforce backend token verification to prevent localStorage-only bypass.
-const authToken = localStorage.getItem("authToken");
-if (authToken) {
-  fetch(`${HOST_API}/verify`, {
-    headers: { Authorization: `Bearer ${authToken}` },
-  })
-    .then((res) => {
-      if (!res.ok) throw new Error("Invalid session");
-    })
-    .catch(() => {
-      localStorage.removeItem("authToken");
-      window.location.href = "auth.html#login";
-    });
-}
 
 import './style.css';
 import { ethers } from "ethers";
@@ -611,6 +589,5 @@ setInterval(() => {
 }, 5000);
 
 window.logout = function () {
-  localStorage.removeItem("authToken");
-  window.location.href = "auth.html";
+  window.location.href = "index.html";
 };
