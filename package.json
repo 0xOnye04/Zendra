@@ -1,0 +1,31 @@
+{
+  "name": "zendra-terminal",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"vite\" \"npm run backend\"",
+    "build": "vite build",
+    "preview": "vite preview",
+    "backend": "node backend/index.js",
+    "backend:dev": "nodemon backend/index.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0",
+    "nodemon": "^3.1.14",
+    "vite": "^8.0.4"
+  },
+  "dependencies": {
+    "axios": "^1.15.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "ethers": "^6.16.0",
+    "express": "^5.2.1",
+    "get-starknet": "^4.0.0"
+  },
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

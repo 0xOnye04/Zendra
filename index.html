@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="src/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>zendra-terminal</title>
+    <script>
+      if (localStorage.getItem("loggedIn") !== "true") {
+        window.location.href = 'auth.html#signup';
+      }
+    </script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">Z</div>
+          <div>
+            <h1>Zendra</h1>
+            <p>On-chain insights</p>
+          </div>
+        </div>
+
+        <nav class="nav-menu">
+          <button onclick="showDashboard()">🏠 Dashboard</button>
+          <button onclick="showMarkets()">📊 Markets</button>
+          <button onclick="showSwap()">💱 Swap</button>
+          <button onclick="showSmartMoney()">🐋 Smart Money</button>
+          <button onclick="runAgent()">🤖 AI Trader</button>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div class="topbar-left">
+            <div class="search-box">
+              <input placeholder="Search token (ETH, PEPE, AVE)..." />
+            </div>
+            <div class="wallet-tracker">
+              <input id="trackAddressInput" placeholder="Track wallet address" />
+              <select id="trackChainSelect">
+                <option value="ethereum">Ethereum</option>
+                <option value="arbitrum">Arbitrum</option>
+                <option value="bsc">BSC</option>
+              </select>
+              <button type="button" onclick="loadTrackedPortfolio()">Track</button>
+            </div>
+          </div>
+          <div id="topbarActions" class="topbar-actions">
+            <button onclick="connectEVM()">Connect Wallet</button>
+            <button onclick="sendEVM()">Send</button>
+          </div>
+        </header>
+
+        <section class="dashboard-grid">
+          <div class="summary-cards">
+            <article class="summary-card">
+              <p class="summary-label">Total Portfolio</p>
+              <h2 id="totalValue">$0.00</h2>
+              <span id="portfolioChange">+0.0% 24h</span>
+            </article>
+            <article class="summary-card">
+              <p class="summary-label">Price Alerts</p>
+              <h2 id="alertsCount">0</h2>
+              <span>Active alerts tracked</span>
+            </article>
+            <article class="summary-card">
+              <p class="summary-label">Smart Signals</p>
+              <h2 id="smartSignals">0</h2>
+              <span>Whale & smart money moves</span>
+            </article>
+            <article class="summary-card">
+              <p class="summary-label">On-chain Risk</p>
+              <h2 id="riskScore">Normal</h2>
+              <span id="riskSummary">No major risk signals</span>
+            </article>
+          </div>
+
+          <div class="content-grid">
+            <section class="card chart-card">
+              <div class="card-heading">
+                <h3>📈 Live Market Chart</h3>
+              </div>
+              <div id="tradingview_chart" class="chart-frame"></div>
+            </section>
+
+            <section class="card portfolio-card">
+              <div class="card-heading">
+                <h3>🧾 Asset Portfolio</h3>
+              </div>
+              <div id="portfolioList" class="portfolio-list">
+                Connect wallet or track an address to view on-chain holdings.
+              </div>
+            </section>
+
+            <section class="card token-card">
+              <div class="card-heading">
+                <h3>🔥 Trending Tokens</h3>
+              </div>
+              <div id="tokenList" class="token-list">
+                Loading tokens...
+              </div>
+            </section>
+
+            <section class="card prices-card">
+              <div class="card-heading">
+                <h3>💲 Current Prices</h3>
+              </div>
+              <div id="priceList" class="price-list">
+                Loading prices...
+              </div>
+            </section>
+
+            <section class="side-cards">
+              <div class="card alerts-card">
+                <div class="card-heading">
+                  <h3>⚠️ Alerts & Risk</h3>
+                </div>
+                <div id="alertList" class="alert-list">Loading alerts...</div>
+                <div id="riskList" class="risk-list">Analyzing on-chain risk...</div>
+              </div>
+
+              <div class="card activity-card">
+                <div class="card-heading">
+                  <h3>📡 Live Activity</h3>
+                </div>
+                <div id="activityFeed" class="activity-feed">Waiting for trades...</div>
+              </div>
+
+              <div class="card smart-card">
+                <div class="card-heading">
+                  <h3>🐋 Smart Money</h3>
+                </div>
+                <div id="smartMoneyList" class="smart-list">Loading wallet signals...</div>
+              </div>
+
+              <div class="card swap-card">
+                <div class="card-heading">
+                  <h3>💱 Quick Swap</h3>
+                </div>
+                <div class="swap-box">
+                  <input id="swapAmount" placeholder="Enter amount" />
+                  <button onclick="swap()">Swap Tokens</button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="https://s3.tradingview.com/tv.js"></script>
+    <script>
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          if (typeof TradingView === "undefined") {
+            console.error("TradingView failed to load");
+            return;
+          }
+
+          new TradingView.widget({
+            width: "100%",
+            height: 320,
+            symbol: "BINANCE:ETHUSDT",
+            interval: "5",
+            theme: "dark",
+            style: "1",
+            locale: "en",
+            container_id: "tradingview_chart"
+          });
+        }, 500);
+      });
+    </script>
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
